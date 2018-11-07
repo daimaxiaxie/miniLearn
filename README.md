@@ -20,16 +20,16 @@ A mini neural network framework,but currently only supported Convolutional neura
 ```
 mnist_train mnist;
 
-double *b = new double[10 * 200]{ 0 };
-double *c = new double[784 * 200];
+double *b = new double[10 * 1000]{ 0 };
+double *c = new double[784 * 1000];
 
-mnist.getbatch(b, c, 200);                                                       //Read 200 training samples      
+mnist.getbatch(b, c, 1000);                                                       //Read 1000 training samples      
 
 miniLearn mLearn;
 Graph& graph = mLearn.CreateGraph();                                             //Generate an operation diagram
 
-Tensor y_ = mLearn.Constant(b, 10 * 200, { 10,1,1,1 }, 200);                     //Initialize constants using b
-Tensor x_image = mLearn.Constant(c, 784 * 200, { 28,28,1,1 }, 200);
+Tensor y_ = mLearn.Constant(b, 10 * 1000, { 10,1,1,1 }, 1000);                     //Initialize constants using b
+Tensor x_image = mLearn.Constant(c, 784 * 1000, { 28,28,1,1 }, 1000);
 
 Tensor w_conv1 = mLearn.Variable(0, 0.1, { 5,5,1,32 });                          //Initialize variable are normally distributed
 Tensor b_conv1 = mLearn.Variable(0.1, { 1,1,32,1 });                             //Initialize variable are all 0.1
@@ -55,7 +55,7 @@ Tensor y_fc2 = mLearn.add(mLearn.matmul(h_fc1_drop, w_fc2), b_fc2);
 Tensor y_conv = mLearn.Softmax(y_fc2);                                             //Calculate prediction result
 Tensor cross = mLearn.neg(mLearn.reduce_sum(mLearn.hadamard(y_, mLearn.log(y_conv)), 0));//Calculate loss
 
-graph.train.GradientDescent(0.01f, cross);                                         //Gradient descent for optimization
+graph.train.GradientDescent(0.005f, cross);                                         //Gradient descent for optimization
 
 free(b);
 free(c);
@@ -66,7 +66,7 @@ double x_test[784 * 2] = { 0 };
 double y_test[10 * 2] = { 0 };
 mnist_test m_test;
 Tensor pre_bool = Tensor(0, { 1,1,1,2 });
-for (size_t i = 0; i < 40; i += 2)                                             //Test 40 samples,2 samples as a goup
+for (size_t i = 0; i < 100; i += 2)                                             //Test 100 samples,2 samples as a goup
 {
     memset(y_test, 0, sizeof(y_test));
     m_test.getbatch(y_test, x_test, 2);
@@ -82,7 +82,7 @@ for (size_t i = 0; i < 40; i += 2)                                             /
 pre_bool.variableMerge(0, 2);
 pre_bool.variableMerge(1, 2);
 
-cout << accuracy(pre_bool);                                                    //Output correct rate
+cout << accuracy(pre_bool);                                                    //Output correct rate    ≈ 0.86
 ```
-Current frame performance is poor,calculation is too slow and code bloated.</br>
+Current frame performance is poor,calculation is slow and code bloated.</br>
 I am also learning.Welcome to communicate with each other.The code will continue to improve.
